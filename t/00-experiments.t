@@ -1,6 +1,6 @@
 use Test;
 
-plan 7;
+plan 9;
 
 sub make-continued-fraction (Real $x is copy) {
     gather loop {
@@ -45,3 +45,6 @@ sub z($a is copy, $b is copy, $c is copy, $d is copy, @x) {
 is z(1, 2, 2, 0, [1, 5, 2]), [1, 1, 2, 7], "mjd's example works";
 is z(1, 0, 1, 0, [1, 2, 3, 4]), [1], "z handles case where it is 0 times x";
 is z(1, 0, 1, 0, [0]), [1], "z handles another case where it is 0 times x";
+is z(1, 4, 4, 0, make-continued-fraction(22/7)), make-continued-fraction(22/7+1/4), 
+   "+1/4 works, with make-continued-fraction";
+is z(1, 0, 0, 1, make-continued-fraction(22/7)), make-continued-fraction(7/22), "z works to get reciprocal";
