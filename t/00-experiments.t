@@ -17,7 +17,7 @@ is make-continued-fraction(-42), [-42], "Sanity test";
 is make-continued-fraction(3.245), [3, 4, 12, 4], "Wikipedia example works";
 is make-continued-fraction(-4.2), [-5, 1, 4], "Wikipedia example works";
 
-sub z($a is copy, $b is copy, $c is copy, $d is copy, @x) {
+multi sub z($a is copy, $b is copy, $c is copy, $d is copy, @x) {
     gather loop {
         # say "abcd: $a $b $c $d";
         my $a-div-c = $c ?? $a div $c !! Inf;
@@ -48,3 +48,31 @@ is z(1, 0, 1, 0, [0]), [1], "z handles another case where it is 0 times x";
 is z(1, 4, 4, 0, make-continued-fraction(22/7)), make-continued-fraction(22/7+1/4), 
    "+1/4 works, with make-continued-fraction";
 is z(1, 0, 0, 1, make-continued-fraction(22/7)), make-continued-fraction(7/22), "z works to get reciprocal";
+
+multi sub z($a is copy, $b is copy, $c is copy, $d is copy, 
+            $e is copy, $f is copy, $g is copy, $h is copy, 
+            @x, @y) {
+    gather loop {
+        my $a-div-e = $e ?? $a div $e !! Inf;
+        my $b-div-f = $f ?? $b div $f !! Inf;
+        my $c-div-g = $g ?? $c div $g !! Inf;
+        my $d-div-h = $h ?? $d div $h !! Inf;
+        last if all($a-div-e, $b-div-f, $c-div-g, $d-div-h) == Inf;
+        if $a-div-e == all($b-div-f, $c-div-g, $d-div-h) {
+            my $r = $a-div-c;
+            ($a, $b, $c, $d, $e, $f, $g, $h) 
+                = ($e, $f, $g, $h, $a - $e * $r, $b - $f * $r, $c - $g * $r, $d - $h * $r);
+            take $r;
+        } elsif ($b / $f - $a / $e).abs > ($c / $g - $a / $e) {
+            if @x {
+                my $p = @x.shift;
+                ($a, $b, $c, $d, $e, $f, $g, $h)
+                    = ($b, $a + $b * $p, $d, $c + $d * $p, $f, $e + $f * $p, $h, $g + $h * $p);
+            } else {
+                ($a, $b, $c, $d) = ($b, $b, $d, $d); # WHY????
+            }
+        }
+    }
+}
+
+//
