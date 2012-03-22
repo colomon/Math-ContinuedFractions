@@ -1,6 +1,6 @@
 use Test;
 
-plan 14;
+plan 18;
 
 sub make-continued-fraction (Real $x is copy) {
     gather loop {
@@ -135,4 +135,7 @@ is cf-sqrt-two()[^10], make-continued-fraction(sqrt(2))[^10], "approximation for
 is z(0, 1, 1, 0, 1, 0, 0, 0, cf-sqrt-two(), make-continued-fraction(1/2))[^10],
    make-continued-fraction(sqrt(2)+1/2)[^10],
    "Extended continued fraction addition";
-eval_dies_ok "z(0, 0, 0, 1, 1, 0, 0, 0, cf-sqrt-two(), cf-sqrt-two())", "sqrt(2)^2 cannot be calculated";
+is z(0, 1, 1, 0, 1, 0, 0, 0, cf-sqrt-two(), cf-sqrt-two())[^10],
+   make-continued-fraction(sqrt(2)*2)[^10],
+   "Extended continued fraction addition";
+eval_dies_ok "z(0, 0, 0, 1, 1, 0, 0, 0, cf-sqrt-two(), cf-sqrt-two())[0]", "sqrt(2)^2 cannot be calculated";
