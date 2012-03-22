@@ -114,7 +114,7 @@ multi sub z($a is copy, $b is copy, $c is copy, $d is copy,
 }
 
 is z(1, 2, 0, 0, 2, 0, 0, 0, [1, 5, 2], [1]), [1, 1, 2, 7], "mjd's example works (big z version)";
-is z(0, 1, 1, 0, 1, 0, 0, 0, make-continued-fraction(1/4), make-continued-fraction(1/2)), 
+is z(0, 1, 1, 0, 1, 0, 0, 0, make-continued-fraction(1/4), make-continued-fraction(1/2)),
    make-continued-fraction(1/4+1/2),
    "Basic continued fraction addition";
 is z(0, 1, -1, 0, 1, 0, 0, 0, make-continued-fraction(1/4), make-continued-fraction(1/2)), 
@@ -127,3 +127,12 @@ is z(0, 1, 0, 0, 0, 0, 1, 0, make-continued-fraction(1/4), make-continued-fracti
    make-continued-fraction(1/4 * 2),
    "Basic continued fraction division";
 
+sub cf-sqrt-two() {
+    1, 2, 2 ... *;
+}
+
+is cf-sqrt-two()[^10], make-continued-fraction(sqrt(2))[^10], "approximation for sqrt-2 works";
+is z(0, 1, 1, 0, 1, 0, 0, 0, cf-sqrt-two(), make-continued-fraction(1/2))[^10],
+   make-continued-fraction(sqrt(2)+1/2)[^10],
+   "Extended continued fraction addition";
+eval_dies_ok "z(0, 0, 0, 1, 1, 0, 0, 0, cf-sqrt-two(), cf-sqrt-two())", "sqrt(2)^2 cannot be calculated";
