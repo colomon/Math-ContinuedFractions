@@ -1,6 +1,6 @@
 use Test;
 
-plan 9;
+plan 14;
 
 sub make-continued-fraction (Real $x is copy) {
     gather loop {
@@ -33,10 +33,10 @@ multi sub z($a is copy, $b is copy, $c is copy, $d is copy, @x) {
             if @x {
                 my $p = @x.shift;
                 ($a, $b, $c, $d) = ($b, $a + $b * $p, $d, $c + $d * $p);
-                # say "hey, $p";
+                # say "got $p";
             } else {
                 ($a, $b, $c, $d) = ($b, $b, $d, $d); # WHY????
-                # say "hey, Inf";
+                # say "got Inf";
             }
         }
     }
@@ -52,27 +52,78 @@ is z(1, 0, 0, 1, make-continued-fraction(22/7)), make-continued-fraction(7/22), 
 multi sub z($a is copy, $b is copy, $c is copy, $d is copy, 
             $e is copy, $f is copy, $g is copy, $h is copy, 
             @x, @y) {
+    my $oops = 0;
     gather loop {
-        my $a-div-e = $e ?? $a div $e !! Inf;
-        my $b-div-f = $f ?? $b div $f !! Inf;
-        my $c-div-g = $g ?? $c div $g !! Inf;
-        my $d-div-h = $h ?? $d div $h !! Inf;
-        last if all($a-div-e, $b-div-f, $c-div-g, $d-div-h) == Inf;
-        if $a-div-e == all($b-div-f, $c-div-g, $d-div-h) {
-            my $r = $a-div-c;
+        # say "\n$a $b $c $d $e $f $g $h";
+        last if all($e, $f, $g, $h) == 0;
+        die "No answer found" if ++$oops > 30;
+        
+        my $b00 = $e ?? FatRat.new($a, $e) !! Inf;
+        my $b10 = $f ?? FatRat.new($b, $f) !! Inf;
+        my $b01 = $g ?? FatRat.new($c, $g) !! Inf;
+        my $b11 = $h ?? FatRat.new($d, $h) !! Inf;
+        # say "$b00  $b01  $b10  $b11";
+        
+        my $i11 = $b11.floor;
+        my $i01 = $b01.floor;
+        my $i10 = $b10.floor;
+        my $i00 = $b00.floor;
+
+        if $i00 == all($i01, $i10, $i11) {
+            my $r = $i00;
             ($a, $b, $c, $d, $e, $f, $g, $h) 
                 = ($e, $f, $g, $h, $a - $e * $r, $b - $f * $r, $c - $g * $r, $d - $h * $r);
             take $r;
-        } elsif ($b / $f - $a / $e).abs > ($c / $g - $a / $e) {
-            if @x {
-                my $p = @x.shift;
-                ($a, $b, $c, $d, $e, $f, $g, $h)
-                    = ($b, $a + $b * $p, $d, $c + $d * $p, $f, $e + $f * $p, $h, $g + $h * $p);
+            # say "r = $r";
+            $oops = 0;
+        } else {
+            sub idiff($a, $b) {
+                # $a | $b == Inf ?? Inf !! ($a - $b).abs;
+                (($a == Inf ?? 100000000000 !! $a) - ($b == Inf ?? 100000000000 !! $b)).abs;
+            }
+            
+            my $xw = idiff($b11, $b01) max idiff($b10, $b00);
+            my $yw = idiff($b11, $b10) max idiff($b01, $b00);
+            # say "xw = $xw   yw = $yw";
+
+            if $xw > $yw {
+                if @x {
+                    my $p = @x.shift;
+                    ($a, $b, $c, $d, $e, $f, $g, $h)
+                        = ($b, $a + $b * $p, $d, $c + $d * $p, $f, $e + $f * $p, $h, $g + $h * $p);
+                    # say "p = $p";
+                } else {
+                    ($a, $b, $c, $d, $e, $f, $g, $h)
+                        = ($b, $b, $d, $d, $f, $f, $h, $h);
+                    # say "p = Inf";
+                }
             } else {
-                ($a, $b, $c, $d) = ($b, $b, $d, $d); # WHY????
+                if @y {
+                    my $q = @y.shift;
+                    ($a, $b, $c, $d, $e, $f, $g, $h)
+                        = ($c, $d, $a + $c * $q, $b + $d * $q, $g, $h, $e + $g * $q, $f + $h * $q);
+                    # say "q = $q";
+                } else {
+                    ($a, $b, $c, $d, $e, $f, $g, $h)
+                        = ($c, $d, $c, $d, $g, $h, $g, $h);
+                    # say "q = Inf";
+                }
             }
         }
     }
 }
 
-//
+is z(1, 2, 0, 0, 2, 0, 0, 0, [1, 5, 2], [1]), [1, 1, 2, 7], "mjd's example works (big z version)";
+is z(0, 1, 1, 0, 1, 0, 0, 0, make-continued-fraction(1/4), make-continued-fraction(1/2)), 
+   make-continued-fraction(1/4+1/2),
+   "Basic continued fraction addition";
+is z(0, 1, -1, 0, 1, 0, 0, 0, make-continued-fraction(1/4), make-continued-fraction(1/2)), 
+   make-continued-fraction(1/4-1/2),
+   "Basic continued fraction subtraction";
+is z(0, 0, 0, 1, 1, 0, 0, 0, make-continued-fraction(1/4), make-continued-fraction(1/2)), 
+   make-continued-fraction(1/4*1/2),
+   "Basic continued fraction multiplication";
+is z(0, 1, 0, 0, 0, 0, 1, 0, make-continued-fraction(1/4), make-continued-fraction(1/2)), 
+   make-continued-fraction(1/4 * 2),
+   "Basic continued fraction division";
+
