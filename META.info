@@ -4,5 +4,5 @@
     "description" : "Basic continued fraction arithmetic",
     "depends"     : [],
     "source-type"   : "git",
-    "source-url"    : "https://github.com/colomon/Math-ContinuedFractions"
+    "source-url"    : "git://github.com/colomon/Math-ContinuedFractions.git"
 }
