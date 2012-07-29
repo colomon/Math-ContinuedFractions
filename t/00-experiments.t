@@ -1,16 +1,7 @@
 use Test;
+use Math::ContinuedFractions;
 
 plan 18;
-
-sub make-continued-fraction (Real $x is copy) {
-    gather loop {
-        my $a = $x.floor;
-        take $a;
-        $x = $x - $a;
-        last if $x == 0;
-        $x = 1 / $x;
-    }
-}
 
 is make-continued-fraction(3), [3], "Sanity test";
 is make-continued-fraction(-42), [-42], "Sanity test";
