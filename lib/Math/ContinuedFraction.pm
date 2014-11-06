@@ -90,6 +90,30 @@ class Math::ContinuedFraction {
     }
 }
 
+# multi sub trait_mod:<is>(Routine $r, :$commutative!) {
+#     
+# }
+
 multi sub infix:<+>(Math::ContinuedFraction $x, Math::ContinuedFraction $y) is export {
     Math::ContinuedFraction.new(z(0, 1, 1, 0, 1, 0, 0, 0, $x.a, $y.a));
+}
+
+multi sub infix:<+>(Math::ContinuedFraction $x, $y) is export {
+    $x + Math::ContinuedFraction.new($y);
+}
+
+multi sub infix:<+>($y, Math::ContinuedFraction $x) is export {
+    $x + Math::ContinuedFraction.new($y);
+}
+
+multi sub infix:<->(Math::ContinuedFraction $x, Math::ContinuedFraction $y) is export {
+    Math::ContinuedFraction.new(z(0, 1, -1, 0, 1, 0, 0, 0, $x.a, $y.a));
+}
+
+multi sub infix:<->(Math::ContinuedFraction $x, $y) is export {
+    $x - Math::ContinuedFraction.new($y);
+}
+
+multi sub infix:<->($x, Math::ContinuedFraction $y) is export {
+    Math::ContinuedFraction.new($x) - $y;
 }

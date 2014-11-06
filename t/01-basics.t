@@ -26,6 +26,14 @@ is ($three + $two).a, Math::ContinuedFraction.new(5).a, "3 + 2 == 5";
 is $three.a, [3], "Didn't consume 3";
 is $two.a, [2], "or 2";
 
+is ($three + 3.2345234).a, Math::ContinuedFraction.new(6.2345234).a, "3 + 3.2345234 == 6.2345234";
+is (3.2345234 + $two).a, Math::ContinuedFraction.new(5.2345234).a, "3.2345234 + 2 == 5.2345234";
 
+is ($three - $two).a, Math::ContinuedFraction.new(1).a, "3 - 2 == 1";
+is $three.a, [3], "Didn't consume 3";
+is $two.a, [2], "or 2";
+
+is ($three - 3.2345234).a, Math::ContinuedFraction.new(-0.2345234).a, "3 - 3.2345234 == -0.2345234";
+is (3.2345234 - $two).a, Math::ContinuedFraction.new(1.2345234).a, "3.2345234 - 2 == 1.2345234";
 
 done;
