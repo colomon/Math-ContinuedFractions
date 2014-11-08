@@ -53,16 +53,33 @@ is (3.2345234 / $two).a, Math::ContinuedFraction.new(3.2345234 / 2).a, "3.234523
 is Math::ContinuedFraction.new(-2.3241).abs.a, Math::ContinuedFraction.new(2.3241).a, '.abs works on negative number';
 is Math::ContinuedFraction.new(2.3241).abs.a, Math::ContinuedFraction.new(2.3241).a, '.abs works on positive number';
 
-is Math::ContinuedFraction.new(0).sign, 0, '0.sign is 0';
-is Math::ContinuedFraction.new(0.0001).sign, 1, '0.0001.sign is 1';
-is Math::ContinuedFraction.new(1).sign, 1, '1.sign is 1';
-is Math::ContinuedFraction.new(1.2313).sign, 1, '1.2313.sign is 1';
-is Math::ContinuedFraction.new(34).sign, 1, '45.sign is 1';
-is Math::ContinuedFraction.new(403.1).sign, 1, '403.1.sign is 1';
-is Math::ContinuedFraction.new(-0.0001).sign, -1, '-0.0001.sign is -1';
-is Math::ContinuedFraction.new(-1).sign, -1, '-1.sign is -1';
-is Math::ContinuedFraction.new(-1.2313).sign, -1, '-1.2313.sign is -1';
-is Math::ContinuedFraction.new(-34).sign, -1, '-45.sign is -1';
-is Math::ContinuedFraction.new(-403.1).sign, -1, '-403.1.sign is -1';
+my @values = # cf => [name, .sign, .truncate, floor, ceiling, round] 
+             Math::ContinuedFraction.new(0) => ["0", 0, 0, 0, 0, 0],
+             Math::ContinuedFraction.new(0.0001) => ["0.0001", 1, 0, 0, 1, 0],
+             Math::ContinuedFraction.new(0.9999) => ["0.9999", 1, 0, 0, 1, 1],
+             Math::ContinuedFraction.new(1) => ["1", 1, 1, 1, 1, 1],
+             Math::ContinuedFraction.new(1.2313) => ["1.2313", 1, 1, 1, 2, 1],
+             Math::ContinuedFraction.new(34) => ["34", 1, 34, 34, 34, 34],
+             Math::ContinuedFraction.new(403.1) => ["403.1", 1, 403, 403, 404, 403],
+             Math::ContinuedFraction.new(-0.0001) => ["-0.0001", -1, 0, -1, 0, 0],  
+             Math::ContinuedFraction.new(-0.9999) => ["-0.9999", -1, 0, -1, 0, -1],  
+             Math::ContinuedFraction.new(-1) => ["-1", -1, -1, -1, -1, -1], 
+             Math::ContinuedFraction.new(-1.2313) => ["-1.2313", -1, -1, -2, -1, -1],
+             Math::ContinuedFraction.new(-34) => ["-34", -1, -34, -34, -34, -34],
+             Math::ContinuedFraction.new(-403.1) => ["-403.1", -1, -403, -404, -403, -403];
+
+for @values>>.kv -> $cf, [$name, $sign, $truncate, $floor, $ceiling, $round] {
+    isa_ok $cf, Math::ContinuedFraction, "$name is a ContinuedFraction";
+    is $cf.sign, $sign, "$name .sign is $sign";
+    isa_ok $cf.sign, Int, "$name .sign is Int";
+    is $cf.truncate, $truncate, "$name .truncate is $truncate";
+    isa_ok $cf.truncate, Int, "$name .sign is Int";
+    is $cf.floor, $floor, "$name .floor is $floor";
+    isa_ok $cf.floor, Int, "$name .sign is Int";
+    is $cf.ceiling, $ceiling, "$name .ceiling is $ceiling";
+    isa_ok $cf.ceiling, Int, "$name .sign is Int";
+    is $cf.round, $round, "$name .round is $round";
+    isa_ok $cf.round, Int, "$name .sign is Int";
+}
 
 done;

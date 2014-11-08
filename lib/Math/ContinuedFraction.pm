@@ -100,6 +100,22 @@ class Math::ContinuedFraction {
             @.a[0] < 0 ?? -1 !! 1
         }
     }
+
+    method truncate() {
+        @.a[0] < 0 && @.a[1].defined ?? @.a[0] + 1 !! @.a[0];
+    }
+
+    method floor() {
+        @.a[0];
+    }
+
+    method ceiling() {
+        @.a[1].defined ?? @.a[0] + 1 !! @.a[0];
+    }
+
+    method round($scale = 1) {
+        (self / $scale + 0.5).floor * $scale;
+    }
 }
 
 # multi sub trait_mod:<is>(Routine $r, :$commutative!) {
