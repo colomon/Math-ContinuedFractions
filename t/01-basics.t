@@ -50,5 +50,19 @@ is $two.a, [2], "or 2";
 is ($three / 3.2345234).a, Math::ContinuedFraction.new(3 / 3.2345234).a, "3 / 3.2345234 == whatever";
 is (3.2345234 / $two).a, Math::ContinuedFraction.new(3.2345234 / 2).a, "3.2345234 / 2 == whatever";
 
+is Math::ContinuedFraction.new(-2.3241).abs.a, Math::ContinuedFraction.new(2.3241).a, '.abs works on negative number';
+is Math::ContinuedFraction.new(2.3241).abs.a, Math::ContinuedFraction.new(2.3241).a, '.abs works on positive number';
+
+is Math::ContinuedFraction.new(0).sign, 0, '0.sign is 0';
+is Math::ContinuedFraction.new(0.0001).sign, 1, '0.0001.sign is 1';
+is Math::ContinuedFraction.new(1).sign, 1, '1.sign is 1';
+is Math::ContinuedFraction.new(1.2313).sign, 1, '1.2313.sign is 1';
+is Math::ContinuedFraction.new(34).sign, 1, '45.sign is 1';
+is Math::ContinuedFraction.new(403.1).sign, 1, '403.1.sign is 1';
+is Math::ContinuedFraction.new(-0.0001).sign, -1, '-0.0001.sign is -1';
+is Math::ContinuedFraction.new(-1).sign, -1, '-1.sign is -1';
+is Math::ContinuedFraction.new(-1.2313).sign, -1, '-1.2313.sign is -1';
+is Math::ContinuedFraction.new(-34).sign, -1, '-45.sign is -1';
+is Math::ContinuedFraction.new(-403.1).sign, -1, '-403.1.sign is -1';
 
 done;

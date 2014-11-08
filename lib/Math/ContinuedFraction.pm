@@ -88,6 +88,18 @@ class Math::ContinuedFraction {
     multi method new(Real $x) {
         self.bless(:a(make-continued-fraction($x)));
     }
+
+    method abs() {
+        @.a[0] < 0 ?? 0 - self !! Math::ContinuedFraction.new(self);
+    }
+
+    method sign() {
+        if  @.a[0] == 0 && !(@.a[1].defined) {
+            0
+        } else {
+            @.a[0] < 0 ?? -1 !! 1
+        }
+    }
 }
 
 # multi sub trait_mod:<is>(Routine $r, :$commutative!) {
