@@ -1,4 +1,5 @@
 {
+    "perl"        : "6.*",
     "name"        : "Math::ContinuedFractions",
     "version"     : "*",
     "description" : "Basic continued fraction arithmetic",
